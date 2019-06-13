@@ -1,10 +1,31 @@
 # whatsapp-deobfuscate
 
-29/05/2019 - Tim Rots / com.whatsapp-2.19.150
+29/05/2019 - Tim Rots / com.whatsapp-2.19.150 / poc for WhatsApp for Android application secret deobfuscation 
 
-poc for WhatsApp for android app secret deobfuscation 
-
+While auditing the com.whatsapp package I stumbled upon the
+class and instance method(s) which handle deobfuscation of
+the application's internally used secrets:
+```java
+package p085d.p241f.p305X;
+public class C4218b {
+    public static final String f14658a = C4218b.m8240a("zffb(==q~{w|fa!<u}}u~w<q}=uw|w`sfwM \"&");
+    public static final String f14659b = C4218b.m8240a("zffba(==d<ezsfasbb<|wf");
+    public static final String f14660c = C4218b.m8240a("zffba(==d<ezsfasbb<|wf=d =wj{af");
+    public static final String f14678u = C4218b.m8240a("esb`{dsqk?fw|}`?%%%$ $**'<ga?wsaf?#<w~p<ssh}|sea<q}");
+    ..etc..
+    public static String m8240a(String str) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            stringBuilder.append((char) (str.charAt(i) ^ 18));
+        }
+        return stringBuilder.toString();
+    }
 ```
+
+I ported this code to Golang for research and educational purposes.
+
+How to use:
+```bash
 $ go build com.whatsapp_2.19.150-deobfuscate.go;./com.whatsapp_2.19.150-deobfuscate|grep Deobfuscated
 Deobfuscated: http://clients3.google.com/generate_204
 Deobfuscated: https://v.whatsapp.net
@@ -32,3 +53,6 @@ Deobfuscated: NX2ZM22Q1B3I
 Deobfuscated: g3Dm3RlhPhuOA
 Deobfuscated: 4j#e*F9+Ms%|g1~5.3rH!we,
 ```
+
+I reported this to Facebook's Whitehat program while keeping in mind their Responsible disclosure guidelines.
+Only after FB confirming this not being a security issue this code has been posted publicly. 
